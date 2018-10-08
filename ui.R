@@ -20,12 +20,12 @@ shinyUI(fluidPage(
                        imageOutput("logo", height="240px")),
 
       conditionalPanel(condition = 'input.muttype=="Hypercube" | input.muttype=="Hypercube ZNE"',
-                       imageOutput("logo6", height="215px")),
+                       imageOutput("logo6", height="240px")),
       #-----------------------------------------------------------------------------------------------------
 
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Strand-Symmetric" | input.muttype=="Hypercube ZNE"',
-                       imageOutput("logo2", height="110px"),
+                       imageOutput("logo2", height="80px"),
                        #-- sliders for Strand-Symmetric
                        sliderInput('k.ag.tc', 'k_AG&TC',
                                    min=0, max=1.5,
@@ -62,7 +62,7 @@ shinyUI(fluidPage(
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Non Symmetric"',
 
-                       imageOutput("logo3", height="110px"),
+                       imageOutput("logo3", height="80px"),
                        #-- sliders for Non Symmetric
                        sliderInput('k.ag', 'k_AG',
                                    min=0, max=1.5,
@@ -412,10 +412,10 @@ shinyUI(fluidPage(
                   #h3( verbatimTextOutput("text") ),
                   ##---------------------------------------------------
                   conditionalPanel(condition = 'input.muttype=="Strand-Symmetric"',
-                                   imageOutput("logo4", height="180px")),
+                                   imageOutput("logo4", height="140px")),
 
                   conditionalPanel(condition = 'input.muttype=="Non Symmetric"',
-                                   imageOutput("logo5", height="180px")),
+                                   imageOutput("logo5", height="140px")),
 
                   conditionalPanel(condition = 'input.muttype=="Hypercube"',
                                    imageOutput("logo7", height="140px")),
