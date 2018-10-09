@@ -266,9 +266,9 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,4), ylim=c(0,60)){
 
     for(dm in 2:16){
       #rgb(runif(5),runif(5),runif(5))
-    lines(x=atgc$out[,"time"],
-          y=100*atgc$out[, dinuc.names[dm]]/atgc$length.genome,
-          pch = 1, cex=0.01, type="l", lwd=3, col=dm)
+        lines(x=atgc$out[,"time"],
+              y=100*atgc$out[, dinuc.names[dm]]/atgc$length.genome,
+              pch = 1, cex=0.01, type="l", lwd=3, col=dm)
     }
 
 
