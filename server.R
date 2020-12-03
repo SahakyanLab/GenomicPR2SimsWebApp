@@ -26,25 +26,24 @@ shinyServer(function(input, output) {
                  })
     DB   <<- NULL
   })
-
   output$logo <- renderImage({
-    list(src = "pic/logo.png",contentType = 'image/png',width = 230,height = 200,alt = "No logo is found...")
+    list(src = "pic/logo.png",contentType = 'image/png',width = 250,height = 220,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo2 <- renderImage({
-    list(src = "pic/logo2.png",contentType = 'image/png',width = 230,height = 200,alt = "No logo is found...")
+    list(src = "pic/logo2.png",contentType = 'image/png',width = 300,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo3 <- renderImage({
-    list(src = "pic/logo3.png",contentType = 'image/png',width = 230,height = 200,alt = "No logo is found...")
+    list(src = "pic/logo3.png",contentType = 'image/png',width = 300,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo4 <- renderImage({
-    list(src = "pic/logo4.png",contentType = 'image/png',width = 530,height = 500,alt = "No logo is found...")
+    list(src = "pic/logo4.png",contentType = 'image/png',width = 470,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo5 <- renderImage({
-    list(src = "pic/logo5.png",contentType = 'image/png',width = 530,height = 500,alt = "No logo is found...")
+    list(src = "pic/logo5.png",contentType = 'image/png',width = 450,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo6 <- renderImage({
@@ -52,7 +51,7 @@ shinyServer(function(input, output) {
   }, deleteFile = FALSE)
 
   output$logo7 <- renderImage({
-    list(src = "pic/logo7.png",contentType = 'image/png',width = 530,height = 200,alt = "No logo is found...")
+    list(src = "pic/logo7.png",contentType = 'image/png',width = 900,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
 
   output$logo8 <- renderImage({
@@ -67,7 +66,7 @@ shinyServer(function(input, output) {
 
     # Constructing the parameters object:
     if(input$muttype=="Strand-Symmetric" | input$muttype=="Non Symmetric"){
-       state  <- c(Ca=input$Acont, Cg=input$Gcont, Ct=input$Tcont, Cc=input$Ccont)
+      state  <- c(Ca=input$Acont, Cg=input$Gcont, Ct=input$Tcont, Cc=input$Ccont)
     }
     if(input$muttype=="Hypercube ZNE" | input$muttype=="Hypercube"){
       state  <- c(Caa=input$AAcont, Cac=input$ACcont, Cag=input$AGcont, Cat=input$ATcont,

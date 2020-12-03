@@ -1,6 +1,6 @@
 library(shiny)
 
-shinyUI(fluidPage(
+fluidPage(
 
   # Application title:
   titlePanel("ATGC Dynamics Solver"),
@@ -17,16 +17,31 @@ shinyUI(fluidPage(
 
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Strand-Symmetric" | input.muttype=="Non Symmetric"',
+                       tags$head(tags$style(
+                         type="text/css",
+                         "#logo img {max-width: 70%; width: auto; max-height: 100%;
+                         padding-bottom: 10px}"
+                         )),
                        imageOutput("logo", height="240px")),
 
       conditionalPanel(condition = 'input.muttype=="Hypercube" | input.muttype=="Hypercube ZNE"',
-                       imageOutput("logo6", height="240px")),
+                       tags$head(tags$style(
+                         type="text/css",
+                         "#logo6 img {max-width: 70%; width: auto; max-height: 100%;
+                         padding-bottom: 10px}"
+                         )),
+                       imageOutput("logo6", height="220px")),
       #-----------------------------------------------------------------------------------------------------
 
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Strand-Symmetric" | input.muttype=="Hypercube ZNE"',
-                       imageOutput("logo2", height="80px"),
-                       #-- sliders for Strand-Symmetric
+                       tags$head(tags$style(
+                         type="text/css",
+                         "#logo2 img {max-width: 100%; width: auto; max-height: 100%;
+                         padding-top: 10px;}"
+                         )),
+                       imageOutput("logo2", height="240px"),
+                       #-- sliders for Strand-Symmetric and Hypercube ZNE
                        sliderInput('k.ag.tc', 'k_AG&TC',
                                    min=0, max=1.5,
                                    value=0.545,
@@ -56,13 +71,17 @@ shinyUI(fluidPage(
                                    min=0, max=1.5,
                                    value=0.235,
                                    step=0.001, round=FALSE)
-                       #-- end of sliders for Strand-Symmetric
+                       #-- end of sliders for Strand-Symmetric and Hypercube ZNE
                        ),
       #-----------------------------------------------------------------------------------------------------
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Non Symmetric"',
-
-                       imageOutput("logo3", height="80px"),
+                       tags$head(tags$style(
+                         type="text/css",
+                         "#logo3 img {max-width: 100%; width: auto; max-height: 100%;
+                         padding-top: 10px;}"
+                         )),
+                       imageOutput("logo3", height="220px"),
                        #-- sliders for Non Symmetric
                        sliderInput('k.ag', 'k_AG',
                                    min=0, max=1.5,
@@ -128,9 +147,7 @@ shinyUI(fluidPage(
       #-----------------------------------------------------------------------------------------------------
       #-----------------------------------------------------------------------------------------------------
       conditionalPanel(condition = 'input.muttype=="Hypercube"',
-
-                       #imageOutput("logo3", height="110px"),
-                       #-- sliders for Non Symmetric
+                       #-- sliders for Hypercube
                        sliderInput('kAA2AC', 'kAA2AC',
                                    min=0, max=1.5,
                                    value=runif(1, min=0, max=1.5),
@@ -370,7 +387,7 @@ shinyUI(fluidPage(
                                    min=0, max=1.5,
                                    value=runif(1, min=0, max=1.5),
                                    step=0.001, round=FALSE)
-                       #-- end of sliders for Non Symmetric
+                       #-- end of sliders for Hypercube
 
                       # L <- NULL
                       # for(i in rates){
@@ -383,13 +400,13 @@ shinyUI(fluidPage(
       )
       #-----------------------------------------------------------------------------------------------------
 
-      #h4("Equilibration Guides"),
-      #sliderInput('EQtolerance', 'Equilibration criterion, nt',
+      # h4("Equilibration Guides"),
+      # sliderInput('EQtolerance', 'Equilibration criterion, nt',
       #            min=0, max=8000,
       #            value=5,
       #            step=5, round=TRUE),
       #
-      #sliderInput('CHtolerance', 'Chargaff compliance deviation',
+      # sliderInput('CHtolerance', 'Chargaff compliance deviation',
       #            min=0, max=0.1,
       #            value=0.01,
       #            step=0.005, round=FALSE)
@@ -412,16 +429,36 @@ shinyUI(fluidPage(
                   #h3( verbatimTextOutput("text") ),
                   ##---------------------------------------------------
                   conditionalPanel(condition = 'input.muttype=="Strand-Symmetric"',
-                                   imageOutput("logo4", height="140px")),
+                                   tags$head(tags$style(
+                                     type="text/css",
+                                     "#logo4 img {max-width: 100%; width: auto; max-height: 100%;
+                                     padding-bottom: 10px;}"
+                                     )),
+                                   imageOutput("logo4", height="200px")),
 
                   conditionalPanel(condition = 'input.muttype=="Non Symmetric"',
-                                   imageOutput("logo5", height="140px")),
+                                   tags$head(tags$style(
+                                     type="text/css",
+                                     "#logo5 img {max-width: 100%; width: auto; max-height: 100%;
+                                     padding-bottom: 10px;}"
+                                     )),
+                                   imageOutput("logo5", height="200px")),
 
                   conditionalPanel(condition = 'input.muttype=="Hypercube"',
-                                   imageOutput("logo7", height="140px")),
+                                   tags$head(tags$style(
+                                     type="text/css",
+                                     "#logo7 img {max-width: 100%; width: auto; max-height: 100%;
+                                     padding-bottom: 10px;}"
+                                     )),
+                                   imageOutput("logo7", height="220px")),
 
                   conditionalPanel(condition = 'input.muttype=="Hypercube ZNE"',
-                                   imageOutput("logo8", height="180px")),
+                                   tags$head(tags$style(
+                                     type="text/css",
+                                     "#logo8 img {max-width: 100%; width: auto; max-height: 100%;
+                                     padding-bottom: 10px;}"
+                                     )),
+                                   imageOutput("logo8", height="200px")),
                   ##---------------------------------------------------
 
                   ##**************************
@@ -590,5 +627,5 @@ shinyUI(fluidPage(
     #-- mainPanel
 
   )
-))
+)
 
