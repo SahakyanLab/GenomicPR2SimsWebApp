@@ -1,12 +1,15 @@
-library(shiny)
+suppressPackageStartupMessages(library(shiny))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(deSolve))
 source("lib.R")
-library("deSolve")
 
 step          = 0.001 # byr
-span          = 4.0   # byr
-#EQtolerance   = 8000  # nucleotide difference
-#CHtolerance   = 0.01  # +- from the ratio (is 0.0015 for human genome)
-#  #    1 byr = 10^9 yr
+span          = 10.0  # byr
+# Load Equilibrium fluctuation tolerance level
+tolerance  <- read.csv(file = "data/PR2_fluctuations.csv", header = TRUE)
+Fluc.tol <- readRDS(file = "data/ChargaffEquilibrium.Rdata")
+EQtolerance <- mean(Fluc.tol$Mean)*((1/100)*25)
 ################################################################################
 
 
@@ -16,54 +19,53 @@ shinyServer(function(input, output) {
   fltrGDB <- reactive({
     withProgress(message="Loading the Genesis database...", value=5,
                  {
-                  getGDB()
-                  setProgress(value=25, message="Filtering the Genesis database...")
-                  fGDB <<- filter.GDB(GDB=GDB,
-                                      status.fused=input$fused,
-                                      status.cleaved=input$cleaved,
-                                      status.same=input$same)
-                  setProgress(value=75, message="Done!")
+                   getGDB()
+                   setProgress(value=25, message="Filtering the Genesis database...")
+                   fGDB <<- filter.GDB(GDB=GDB,
+                                       status.fused=input$fused,
+                                       status.cleaved=input$cleaved,
+                                       status.same=input$same)
+                   setProgress(value=75, message="Done!")
                  })
     DB   <<- NULL
   })
   output$logo <- renderImage({
     list(src = "pic/logo.png",contentType = 'image/png',width = 250,height = 220,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo2 <- renderImage({
     list(src = "pic/logo2.png",contentType = 'image/png',width = 300,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo3 <- renderImage({
     list(src = "pic/logo3.png",contentType = 'image/png',width = 300,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo4 <- renderImage({
     list(src = "pic/logo4.png",contentType = 'image/png',width = 470,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo5 <- renderImage({
     list(src = "pic/logo5.png",contentType = 'image/png',width = 450,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo6 <- renderImage({
     list(src = "pic/logo6.png",contentType = 'image/png',width = 230,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo7 <- renderImage({
     list(src = "pic/logo7.png",contentType = 'image/png',width = 900,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
+  
   output$logo8 <- renderImage({
     list(src = "pic/logo8.png",contentType = 'image/png',width = 430,height = 200,alt = "No logo is found...")
   }, deleteFile = FALSE)
-
-
-
+  
+  
+  
   ###############################
   output$EvoPlot <- renderPlot({
-
-
+    
     # Constructing the parameters object:
     if(input$muttype=="Strand-Symmetric" | input$muttype=="Non Symmetric"){
       state  <- c(Ca=input$Acont, Cg=input$Gcont, Ct=input$Tcont, Cc=input$Ccont)
@@ -78,8 +80,8 @@ shinyServer(function(input, output) {
     if(abs(sum(state)-100)>0.0001){
       stop("The sum of the base contents should be 100%! Please, adjust the sliders correspondingly.")
     }
-
-
+    
+    
     # Constructing the state object:
     if(input$muttype=="Strand-Symmetric"){
       parameters <- c(kag=input$k.ag.tc, kat=input$k.at.ta, kac=input$k.ac.tg,
@@ -121,32 +123,31 @@ shinyServer(function(input, output) {
                       kGC2AC=input$kGC2AC, kGC2CC=input$kGC2CC, kGC2GA=input$kGC2GA,
                       kTA2AA=input$kTA2AA, kTA2CA=input$kTA2CA, kTA2GA=input$kTA2GA)  #mut/byr
     }
-
-
+    
+    
     if(input$muttype == "Strand-Symmetric" | input$muttype == "Non Symmetric"){
       atgc <- SolveATGC(parameters = parameters, state = state, step = step, span = span,
-                        EQtolerance = 0, CHtolerance = 0, k=1)
+                        EQtolerance = EQtolerance, CHtolerance = tolerance, k=1)
     }
     if(input$muttype == "Hypercube ZNE"){
       atgc <- SolveATGC(parameters = parameters, state = state, step = step, span = span,
-                        EQtolerance = 0, CHtolerance = 0, k=2)
+                        EQtolerance = EQtolerance, CHtolerance = tolerance, k=2)
     }
     if(input$muttype == "Hypercube"){
       atgc <- SolveATGC(parameters = parameters, state = state, step = step, span = span,
-                        EQtolerance = 0, CHtolerance = 0, k="2full")
+                        EQtolerance = EQtolerance, CHtolerance = tolerance, k="2full")
     }
-
-
+    
+    
     if(input$muttype == "Strand-Symmetric" | input$muttype == "Non Symmetric"){
-      PlotATGC(atgc=atgc, time.unit="byr", xlim=c(0,4), ylim=c(0,60))
+      PlotATGC(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60))
     }
     if(input$muttype == "Hypercube ZNE" | input$muttype == "Hypercube"){
-      PlotATGC(atgc=atgc, time.unit="byr", xlim=c(0,4), ylim=c(0,15))
+      PlotATGC(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,15))
     }
-
-
+    
+    
   })
   ###############################
-
+  
 })
-

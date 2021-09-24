@@ -1,32 +1,33 @@
 ################################################################################
 SolveATGC <- function(parameters=parameters, state=state, step=step, span=span,
-                      EQtolerance=EQtolerance, CHtolerance=CHtolerance, k=1){
-
+                      EQtolerance=EQtolerance, CHtolerance, k=1){
+  
   times <- seq(0, span, by=step) # byr
-
+  
   ##########################################
   if(k==1){
     mut.mdl <- function(t, state, parameters){
-
-     with(as.list(c(state, parameters)),{
-     # rate of change
-       dCa <- kca*Cc+kta*Ct+kga*Cg-(kac+kat+kag)*Ca
-       dCg <- kag*Ca+kcg*Cc+ktg*Ct-(kga+kgt+kgc)*Cg
-       dCt <- kat*Ca+kgt*Cg+kct*Cc-(kta+ktc+ktg)*Ct
-       dCc <- kac*Ca+ktc*Ct+kgc*Cg-(kca+kct+kcg)*Cc
-
-       # return the rate of change
-       list(c(dCa, dCg, dCt, dCc))
-     }) # end with(as.list ...
-
+      
+      with(as.list(c(state, parameters)),{
+        # rate of change
+        dCa <- kca*Cc+kta*Ct+kga*Cg-(kac+kat+kag)*Ca
+        dCg <- kag*Ca+kcg*Cc+ktg*Ct-(kga+kgt+kgc)*Cg
+        dCt <- kat*Ca+kgt*Cg+kct*Cc-(kta+ktc+ktg)*Ct
+        dCc <- kac*Ca+ktc*Ct+kgc*Cg-(kca+kct+kcg)*Cc
+        
+        # return the rate of change
+        list(c(dCa, dCg, dCt, dCc))
+      }) # end with(as.list ...
+      
     }
   }
+  
   ##########################################
-
+  
   ##########################################
   if(k==2){
     mut.mdl <- function(t, state, parameters){
-
+      
       with(as.list(c(state, parameters)),{
         # rate of change
         dCaa <- (Cac+Cca)*i+(Cat+Cta)*l+(Cag+Cga)*m-2*Caa*(j+l+n)
@@ -45,22 +46,22 @@ SolveATGC <- function(parameters=parameters, state=state, step=step, span=span,
         dCtc <- Cgc*i+Cta*j+Ctg*k+Cac*l+Ccc*m+Ctt*n-Ctc*(i+j+k+l+m+n)
         dCtg <- Cgg*i+Ctt*j+Ctc*k+Cag*l+Ccg*m+Cta*n-Ctg*(i+j+k+l+m+n)
         dCtt <- (Cgt+Ctg)*i+(Cat+Cta)*l+(Cct+Ctc)*m-2*Ctt*(j+l+n)
-
+        
         # return the rate of change
         list(c(dCaa, dCac, dCag, dCat,
                dCca, dCcc, dCcg, dCct,
                dCga, dCgc, dCgg, dCgt,
                dCta, dCtc, dCtg, dCtt))
       }) # end with(as.list ...
-
+      
     }
   }
   ##########################################
-
+  
   ##########################################
   if(k=="2full"){
     mut.mdl <- function(t, state, parameters){
-
+      
       with(as.list(c(state, parameters)),{
         # rate of change
         dCaa <- kCA2AA*Cca - kAA2CA*Caa + kTA2AA*Cta - kAA2TA*Caa + kGA2AA*Cga -
@@ -111,57 +112,60 @@ SolveATGC <- function(parameters=parameters, state=state, step=step, span=span,
         dCtt <- kAT2AA*Cat - kAA2AT*Ctt + kAG2AA*Cct - kAA2AG*Ctt + kAC2AA*Cgt -
           kAA2AC*Ctt + kTA2AA*Cta - kAA2TA*Ctt + kGA2AA*Ctc - kAA2GA*Ctt +
           kCA2AA*Ctg - kAA2CA*Ctt
-
+        
         # return the rate of change
         list(c(dCaa, dCac, dCag, dCat,
                dCca, dCcc, dCcg, dCct,
                dCga, dCgc, dCgg, dCgt,
                dCta, dCtc, dCtg, dCtt))
       }) # end with(as.list ...
-
+      
     }
   }
   ##########################################
-
+  
   library(deSolve)
   out <- ode(y=state, times=times, func=mut.mdl, parms=parameters)
-  length.out <- length(out[,1])
-
-  length.genome <-  sum(state)
-
+  length.out <- dim(out)[1]
+  length.genome <- sum(state)
+  
   #********
   if(k==1){
-  dif.nucl <- c( sum( out[1,c("Ca","Cg","Ct","Cc")] ),
-                sapply(2:length.out, function(i){
-                  sum(abs(out[i,c("Ca","Cg","Ct","Cc")] - out[(i-1),c("Ca","Cg","Ct","Cc")]))
-                  }, USE.NAMES=FALSE, simplify=TRUE))
+    dif.nucl <- c(sum(out[1,c("Ca","Cg","Ct","Cc")]),
+                  rowSums(abs(diff(out[,c("Ca","Cg","Ct","Cc")])))/4)
 
-  #dinuc.names <- c("CAA", "CAC", "CAG", "CAT", "CCA", "CCC", "CCG", "CCT", "CGA", "CGC", "CGG", "CGT", "CTA", "CTC", "CTG", "CTT")
-  #dif.nucl <- c( sum( out[1, dinuc.names] ),
-  #               sapply(2:length.out, function(i){
-  #                 sum(abs(out[i, dinuc.names] - out[(i-1), dinuc.names]))
-  #               }, USE.NAMES=FALSE, simplify=TRUE))
-
-  at.ratio <- sapply(1:length.out, function(i){
-                  out[i,"Ca"]/out[i,"Ct"]
-                  }, USE.NAMES=FALSE, simplify=TRUE)
-
-  gc.ratio <- sapply(1:length.out, function(i){
-                  out[i,"Cg"]/out[i,"Cc"]
-                  }, USE.NAMES=FALSE, simplify=TRUE)
-
-  gc.content <- sapply(1:length.out, function(i){
-                  (out[i,"Cg"] + out[i,"Cc"])*100/length.genome
-                  }, USE.NAMES=FALSE, simplify=TRUE)
-
-  Eq.time <- times[suppressWarnings(min(which((dif.nucl<=EQtolerance)==TRUE)))]
-  Ch.time <- times[suppressWarnings(
-      min(which((abs(at.ratio-1)<=CHtolerance)&(abs(gc.ratio-1)<=CHtolerance)))
-                 )]
-  Fin.GC  <- as.vector(gc.content[length.out])
+    at.ratio <- out[,"Ca"]/out[,"Ct"]
+    gc.ratio <- out[,"Cg"]/out[,"Cc"]
+    at.content <- (out[,"Ca"] + out[,"Ct"])*100/length.genome
+    gc.content <- (out[,"Cg"] + out[,"Cc"])*100/length.genome
+    at.skew <- ((out[,"Ca"] - out[,"Ct"])/(out[,"Ca"] + out[,"Ct"]))
+    gc.skew    <- ((out[,"Cg"] - out[,"Cc"])/(out[,"Cg"] + out[,"Cc"]))
+    
+    # Genome Equilibrium tolerance
+    dif <- abs(diff(out[,c("Ca","Cg","Ct","Cc")]/100))
+    dif.max.min <- apply(dif, 1, function(x){max(x) - min(x)})
+    Eq.time <- times[which(dif.max.min <= EQtolerance)[1]]
+    
+    # Chargaff compliance
+    at.tol <- CHtolerance[CHtolerance$metadata == "AT_skew", "st.dev"]
+    gc.tol <- CHtolerance[CHtolerance$metadata == "GC_skew", "st.dev"]
+    Ch.compliance <- which(abs(gc.skew-0) <= gc.tol & abs(at.skew-0) <= at.tol)
+    
+    # if differences between compliant cases is 1, take first index
+    # otherwise, take first index after the biggest difference
+    if(length(table(diff(Ch.compliance))) == 1){
+      Ch.time <- times[Ch.compliance[which(diff(Ch.compliance) == 1)[1]]]
+    } else {
+      Ch.time <- times[Ch.compliance[tail(which(diff(Ch.compliance) != 1), n = 1)+1]]
+    }
+    
+    if(length(Ch.time) == 0){
+      Ch.time <- 0
+    }
+    
+    Fin.GC  <- as.vector(gc.content[length.out])
   }
   #********
-
   RESULTS <- NULL
   RESULTS$inp              <- NULL # input data
   RESULTS$inp$k            <- k
@@ -169,114 +173,149 @@ SolveATGC <- function(parameters=parameters, state=state, step=step, span=span,
   RESULTS$inp$state        <- state
   RESULTS$inp$step         <- step
   RESULTS$inp$span         <- span
-  RESULTS$inp$EQtolerance  <- EQtolerance
-  RESULTS$inp$CHtolerance  <- CHtolerance
   RESULTS$out              <- out                 # numerical solution to the diff eqs
-
+  
   #********
   if(k==1){
-  RESULTS$dif.nucl         <- dif.nucl
-  RESULTS$at.ratio         <- as.vector(at.ratio) # at.ratio dynamics vector
-  RESULTS$gc.ratio         <- as.vector(gc.ratio)
-  RESULTS$gc.content       <- as.vector(gc.content)
-  RESULTS$Eq.time          <- Eq.time  # time to reach the equilibration tolerance limit
-  RESULTS$Ch.time          <- Ch.time  # time to reach Chargaff's tolerance limit
-  RESULTS$Fin.GC           <- Fin.GC   # the G+C content at the end of the simulation
+    RESULTS$dif.nucl         <- dif.nucl
+    RESULTS$at.ratio         <- as.vector(at.ratio) # at.ratio dynamics vector
+    RESULTS$gc.ratio         <- as.vector(gc.ratio)
+    RESULTS$gc.content       <- as.vector(gc.content)
+    RESULTS$Eq.time          <- Eq.time           # time to reach the equilibration tolerance limit 
+    RESULTS$Ch.time          <- Ch.time           # time to reach Chargaff's tolerance limit
+    RESULTS$Fin.GC           <- Fin.GC   # the G+C content at the end of the simulation
   }
   #********
   RESULTS$length.genome    <- length.genome
   RESULTS$length.out       <- length.out
-
+  
   return(RESULTS)
-
 }
-################################################################################
-
 
 ################################################################################
-PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,4), ylim=c(0,60)){
-
+PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60)){
+  
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   if(as.character(atgc$inp$k)=="1"){
+    Plots <- as.data.frame(atgc$out) %>%
+      as_tibble() %>%
+      ggplot(aes(x = time,
+                 y = Ca)) + 
+      geom_line(aes(y = Ca), size = 1.2, col = "forestgreen") + 
+      geom_line(aes(y = Cg), size = 1.2, col = "orange") + 
+      geom_line(aes(y = Ct), size = 1.2, col = "red") + 
+      geom_line(aes(y = Cc), size = 1.2, col = "blue") + 
+      xlim(xlim) +
+      ylim(ylim) +
+      labs(x = paste0("Time, ",time.unit),
+           y = "Base content, %") + 
+      geom_text(data = data.frame(
+        xpos = 0,
+        ypos = max(ylim),
+        annotateText = paste(
+          "t = 0 ",time.unit,"\n",
+          "nG (orange) = ",round(atgc$inp$state["Cg"], 2),"\n",
+          "nC (blue) = ",round(atgc$inp$state["Cc"], 2),"\n",
+          "nA (green) = ",round(atgc$inp$state["Ca"], 2),"\n",
+          "nT (red) = ",round(atgc$inp$state["Ct"], 2),"\n",
+          "G+C = ",round(100*(atgc$inp$state["Cg"]+atgc$inp$state["Cc"])/
+                           atgc$length.genome,2),"%","\n",
+          "G/C = ",format(round(atgc$inp$state["Cg"]/atgc$inp$state["Cc"],2),nsmall=2),"\n",   
+          "A/T = ",format(round(atgc$inp$state["Ca"]/atgc$inp$state["Ct"],2),nsmall=2), sep=""),
+        hjustvar = 0, vjustvar = 1), 
+        aes(x = xpos, 
+            y = ypos, 
+            hjust = hjustvar, 
+            vjust = vjustvar, 
+            label = annotateText,
+            angle = 0), size = 4) + 
+      geom_text(data = data.frame(
+        xpos = max(xlim)-2,
+        ypos = max(ylim), 
+        annotateText = paste(
+          "t = ",round(atgc$inp$span,2)," ",time.unit,"\n",
+          "nG = ",round(as.vector(atgc$out[atgc$length.out,"Cg"]),2),"\n",
+          "nC = ",round(as.vector(atgc$out[atgc$length.out,"Cc"]),2),"\n",
+          "nA = ",round(as.vector(atgc$out[atgc$length.out,"Ca"]),2),"\n",
+          "nT = ",round(as.vector(atgc$out[atgc$length.out,"Ct"]),2),"\n",
+          "G+C = ",round(atgc$gc.content[atgc$length.out],2),"%","\n",
+          "G/C = ",format(round(atgc$out[atgc$length.out,"Cg"]/atgc$out[atgc$length.out,"Cc"],2),nsmall=2),"\n",   
+          "A/T = ",format(round(atgc$out[atgc$length.out,"Ca"]/atgc$out[atgc$length.out,"Ct"],2),nsmall=2), sep=""),
+        hjustvar = 0, vjustvar = 1), 
+        aes(x = xpos, 
+            y = ypos, 
+            hjust = hjustvar, 
+            vjust = vjustvar, 
+            label = annotateText,
+            angle = 0), size = 4) + 
+      theme_bw()
+    
+    if(atgc$Ch.time != 0){
+      Plots <- Plots +
+        geom_vline(xintercept = atgc$Ch.time, linetype = "dashed") +
+        geom_text(data = data.frame(xpos = atgc$Ch.time,
+                                    ypos =  min(ylim),
+                                    annotateText = "Chargaff eq. reached",
+                                    hjustvar = 0, vjustvar = 1.1),
+                  aes(x = xpos,
+                      y = ypos,
+                      hjust = hjustvar,
+                      vjust = vjustvar,
+                      label = annotateText,
+                      angle = 90),
+                  fontface = "bold", size = 5)
+    }
 
-  plot(x=atgc$out[,"time"],
-       y=100*atgc$out[, "Cg"]/atgc$length.genome,
-       ylab="base content, %", xlab=paste("time, ",time.unit,sep=""),
-       pch = 1, cex=0.01, type="l", lwd=3, col="orange",
-       xlim=xlim, ylim=ylim)
-
-  lines(x=atgc$out[,"time"],
-        y=100*atgc$out[, "Ca"]/atgc$length.genome,
-        pch = 1, cex=0.01, type="l", lwd=3, col="forestgreen")
-
-  lines(x=atgc$out[,"time"],
-        y=100*atgc$out[, "Cc"]/atgc$length.genome,
-        pch = 1, cex=0.01, type="l", lwd=3, col="blue")
-
-  lines(x=atgc$out[,"time"],
-        y=100*atgc$out[, "Ct"]/atgc$length.genome,
-        pch = 1, cex=0.01, type="l", lwd=3, col="red")
-
-  text(x=min(xlim)+diff(xlim)/15, y=max(ylim), paste("t = 0 ",time.unit,"\n",
-                                      "%G = ",round(atgc$inp$state["Cg"],1),"\n",
-                                      "%C = ",round(atgc$inp$state["Cc"],1),"\n",
-                                      "%A = ",round(atgc$inp$state["Ca"],1),"\n",
-                                      "%T = ",round(atgc$inp$state["Ct"],1),"\n",
-                                      "G+C = ",round(100*(atgc$inp$state["Cg"]+atgc$inp$state["Cc"])/
-                                                    atgc$length.genome,2),"%","\n",
-                                      "G/C = ",format(round(atgc$inp$state["Cg"]/atgc$inp$state["Cc"],3),nsmall=3),"\n",
-                                      "A/T = ",format(round(atgc$inp$state["Ca"]/atgc$inp$state["Ct"],3),nsmall=3), sep=""),
-                                      pos = 1, cex=0.6)
-
-  text(x=max(xlim)-diff(xlim)/15, y=max(ylim), paste("t = ",round(atgc$inp$span,2)," ",time.unit,"\n",
-                                      "%G = ",round(as.vector(atgc$out[atgc$length.out,"Cg"]),1),"\n",
-                                      "%C = ",round(as.vector(atgc$out[atgc$length.out,"Cc"]),1),"\n",
-                                      "%A = ",round(as.vector(atgc$out[atgc$length.out,"Ca"]),1),"\n",
-                                      "%T = ",round(as.vector(atgc$out[atgc$length.out,"Ct"]),1),"\n",
-                                      "G+C = ",round(atgc$gc.content[atgc$length.out],2),"%","\n",
-                                      "G/C = ",format(round(atgc$out[atgc$length.out,"Cg"]/atgc$out[atgc$length.out,"Cc"],3),nsmall=3),"\n",
-                                      "A/T = ",format(round(atgc$out[atgc$length.out,"Ca"]/atgc$out[atgc$length.out,"Ct"],3),nsmall=3), sep=""),
-                                      pos = 1, cex=0.6)
-  #if(!is.na(atgc$Ch.time)){
-  #  abline(v=atgc$Ch.time, lty="dashed")
-  #  text(y=min(ylim),  x=atgc$Ch.time, pos=4, "Chargaff eq. reached", las=1, cex=0.6, srt=90)
-  #}
-
-  #if(!is.na(atgc$Eq.time)){
-  #  abline(v=atgc$Eq.time)
-  #  text(y=min(ylim),  x=atgc$Eq.time, pos=4, "Genome eq. reached", las=1, cex=0.6, srt=90)
-  #}
-
+    if(atgc$Eq.time != 0){
+      Plots <- Plots +
+        geom_vline(xintercept = atgc$Eq.time) +
+        geom_text(data = data.frame(xpos = atgc$Eq.time,
+                                    ypos =  min(ylim),
+                                    annotateText = "Genome eq. reached",
+                                    hjustvar = 0, vjustvar = 1.1),
+                  aes(x = xpos,
+                      y = ypos,
+                      hjust = hjustvar,
+                      vjust = vjustvar,
+                      label = annotateText,
+                      angle = 90),
+                  fontface = "bold", size = 5)
+    }
+    print(Plots)
   }
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   if(as.character(atgc$inp$k)=="2" | as.character(atgc$inp$k)=="2full"){
-
     dinuc.names <- c("Caa", "Cac", "Cag", "Cat",
                      "Cca", "Ccc", "Ccg", "Cct",
                      "Cga", "Cgc", "Cgg", "Cgt",
                      "Cta", "Ctc", "Ctg", "Ctt")
-
-    plot(x=atgc$out[,"time"],
-         y=100*atgc$out[, dinuc.names[1] ]/atgc$length.genome,
-         ylab="di-nucleotide content, %", xlab=paste("time, ",time.unit,sep=""),
-         pch = 1, cex=0.01, type="l", lwd=3, col=1,
-         xlim=xlim, ylim=ylim)
-
-    for(dm in 2:16){
-      #rgb(runif(5),runif(5),runif(5))
-        lines(x=atgc$out[,"time"],
-              y=100*atgc$out[, dinuc.names[dm]]/atgc$length.genome,
-              pch = 1, cex=0.01, type="l", lwd=3, col=dm)
-    }
-
-
+    
+    Plots <- as.data.frame(atgc$out) %>%
+      as_tibble() %>%
+      ggplot(aes(x = time,
+                 y = Caa)) + 
+      geom_line(aes(y = Cac), size = 1.2, col = "forestgreen") + 
+      geom_line(aes(y = Cag), size = 1.2, col = "blue") + 
+      geom_line(aes(y = Cat), size = 1.2, col = "red") + 
+      geom_line(aes(y = Cca), size = 1.2, col = "orange") + 
+      geom_line(aes(y = Ccc), size = 1.2, col = "purple") + 
+      geom_line(aes(y = Ccg), size = 1.2, col = "pink") + 
+      geom_line(aes(y = Cct), size = 1.2, col = "magenta") + 
+      geom_line(aes(y = Cga), size = 1.2, col = "brown") + 
+      geom_line(aes(y = Cgc), size = 1.2, col = "navyblue") + 
+      geom_line(aes(y = Cgg), size = 1.2, col = "darkred") + 
+      geom_line(aes(y = Cgt), size = 1.2, col = "black") + 
+      geom_line(aes(y = Cta), size = 1.2, col = "cyan") + 
+      geom_line(aes(y = Ctc), size = 1.2, col = "turquoise") + 
+      geom_line(aes(y = Ctg), size = 1.2, col = "gold") + 
+      geom_line(aes(y = Ctt), size = 1.2, col = "#FF6767") + 
+      xlim(xlim) +
+      ylim(ylim) +
+      labs(x = paste0("Time, ",time.unit),
+           y = "Di-nucleotide content, %") + 
+      theme_bw()
+    print(Plots)
   }
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-
 }
 ################################################################################
-
 
