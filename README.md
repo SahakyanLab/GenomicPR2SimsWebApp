@@ -1,4 +1,4 @@
-# ATGC Network Research
+# ATGC Dynamic Solver
 
 ## Interactive web application for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
 
