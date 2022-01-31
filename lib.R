@@ -198,7 +198,6 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60)){
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   if(as.character(atgc$inp$k)=="1"){
     Plots <- as.data.frame(atgc$out) %>%
-      as_tibble() %>%
       ggplot(aes(x = time,
                  y = Ca)) + 
       geom_line(aes(y = Ca), size = 1.2, col = "forestgreen") + 
@@ -248,7 +247,11 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60)){
             vjust = vjustvar, 
             label = annotateText,
             angle = 0), size = 4) + 
-      theme_bw()
+      theme_bw() + 
+      theme(
+        axis.text = element_text(size = 18),
+        axis.title = element_text(size = 20)
+      )
     
     if(atgc$Ch.time != 0){
       Plots <- Plots +
@@ -290,7 +293,6 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60)){
                      "Cta", "Ctc", "Ctg", "Ctt")
     
     Plots <- as.data.frame(atgc$out) %>%
-      as_tibble() %>%
       ggplot(aes(x = time,
                  y = Caa)) + 
       geom_line(aes(y = Cac), size = 1.2, col = "forestgreen") + 
@@ -312,7 +314,11 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,10), ylim=c(0,60)){
       ylim(ylim) +
       labs(x = paste0("Time, ",time.unit),
            y = "Di-nucleotide content, %") + 
-      theme_bw()
+      theme_bw() + 
+      theme(
+        axis.text = element_text(size = 18),
+        axis.title = element_text(size = 20)
+      )
     print(Plots)
   }
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
