@@ -29,4 +29,4 @@ Example demonstration of varying parameters with results plotted in the main pan
 
 ## R&D pipeline
 
-Please visit the [ATGCNetwork GitHub](git clone https://github.com/SahakyanLab/ATGCNetworkResearch) repository for the R&P pipeline for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
+Please visit the [ATGCNetwork GitHub](https://github.com/SahakyanLab/ATGCNetworkResearch) repository for the R&P pipeline for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
