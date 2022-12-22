@@ -2,7 +2,7 @@ suppressPackageStartupMessages(library(shiny))
 
 fluidPage(
   # Application title:
-  titlePanel("ATGC Dynamics Solver"),
+  titlePanel("Genomic PR-2 Simulations"),
   
   # Sidebar with a number of filtering input:
   sidebarLayout(
