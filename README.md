@@ -1,4 +1,4 @@
-# ATGC Dynamic Solver
+# Genomic PR-2 Simulations Shiny
 
 ## Interactive web application for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
 
@@ -6,10 +6,10 @@ Numerical simulation models that express the individual base contents through th
 
 ## Installation and Usage
 
-Download the source code from the [GitHub](https://github.com/SahakyanLab/ATGCsolver) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
+Download the source code from the [GitHub](https://github.com/SahakyanLab/GenomicPR2SimulationsShiny) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
 
 ```
-git clone https://github.com/SahakyanLab/ATGCsolver
+git clone https://github.com/SahakyanLab/GenomicPR2SimulationsShiny
 ```
 
 Once installed, open the `exe` executable file in the local folder.
@@ -29,4 +29,4 @@ Example demonstration of varying parameters with results plotted in the main pan
 
 ## R&D pipeline
 
-Please visit the [ATGCNetwork GitHub](https://github.com/SahakyanLab/ATGCNetworkResearch) repository for the R&P pipeline for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
+Please visit the [GenomicPR2Simulations GitHub](https://github.com/SahakyanLab/GenomicPR2Simulations) repository for the R&P pipeline for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
