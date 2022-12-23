@@ -1,4 +1,4 @@
-# Genomic PR-2 Simulations Shiny
+# Genomic PR-2 Simulations WebApp
 
 ## Interactive web application for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
 
@@ -6,10 +6,10 @@ Numerical simulation models that express the individual base contents through th
 
 ## Installation and Usage
 
-Download the source code from the [GitHub](https://github.com/SahakyanLab/GenomicPR2SimulationsShiny) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
+Download the source code from the [GitHub](https://github.com/SahakyanLab/GenomicPR2SimsWebApp) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
 
 ```
-git clone https://github.com/SahakyanLab/GenomicPR2SimulationsShiny
+git clone https://github.com/SahakyanLab/GenomicPR2SimsWebApp
 ```
 
 Once installed, open the `exe` executable file in the local folder.
